@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useRef, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 import Link from 'next/link'
@@ -11,7 +11,7 @@ type LibItem = { id: string; name: string; rate: number }
 const uid = () => Math.random().toString(36).slice(2, 9)
 const fmt = (n: number) => '$' + Number(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 
-export default function QuotePage() {
+function QuotePage() {
   const router = useRouter()
   const params = useSearchParams()
   const loadId = params.get('load')
@@ -198,8 +198,8 @@ export default function QuotePage() {
       y += rowH
     })
     y += 6
+    const rx = W - margin - 70
     if (taxRate > 0) {
-      const rx = W - margin - 70
       doc.setFont('helvetica', 'normal')
       doc.setFontSize(9)
       doc.setTextColor(100, 116, 139)
@@ -412,5 +412,13 @@ export default function QuotePage() {
         </div>
       )}
     </div>
+  )
+}
+
+export default function QuotePageWrapper() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950"><div className="w-8 h-8 border-2 border-amber-600 border-t-transparent rounded-full animate-spin"/></div>}>
+      <QuotePage />
+    </Suspense>
   )
 }
